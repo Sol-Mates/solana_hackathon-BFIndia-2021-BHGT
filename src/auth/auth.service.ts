@@ -6,11 +6,11 @@ import bcrypt from 'bcrypt'
 export class AuthService {
   constructor(private userService: UserService, private jwtService: JwtService) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.userService.findOne(username);
+  async validateUser(params:{username: string, pass: string}): Promise<any> {
+    const user = await this.userService.findOne({...params});
     if (user && user.length) {
       const hash = user[0].password
-      const isMatch = await bcrypt.compare(pass, hash);
+      const isMatch = await bcrypt.compare(params.pass, hash);
       if(!isMatch){
         return null
       }
@@ -21,11 +21,12 @@ export class AuthService {
   }
 
   async login(user: any) {
-    let payload = await this.validateUser(user.username, user.password)
+    let payload = await this.validateUser({username:user.username, pass: user.password})
     if(payload){
       payload = { username: payload.username, id: payload.id };
       return {
         access_token: this.jwtService.sign(payload),
+        userId: payload.id
       };
     }else{
       throw Error("Please enter valid username or password")

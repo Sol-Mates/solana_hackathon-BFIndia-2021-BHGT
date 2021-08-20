@@ -3,9 +3,12 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { UserQueries } from './user.queries';
 import { ApplicationLoggerService } from 'src/logger/logger.service';
+import { UniqueCodeService } from 'src/dbservices/tables/uniqueCode/uniqueCode.services';
+import { TableModule } from 'src/dbservices/tables/table.module';
 
 @Module({
-  providers: [UserService, UserQueries, ApplicationLoggerService],
+  imports:[TableModule],
+  providers: [UserService, UserQueries, UniqueCodeService, ApplicationLoggerService],
   controllers: [UserController],
   exports:[UserService, UserQueries]
 })

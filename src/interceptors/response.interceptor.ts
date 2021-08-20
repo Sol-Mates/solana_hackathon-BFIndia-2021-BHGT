@@ -9,13 +9,13 @@ import {
   
 
   type TMessage = string;
-  interface ISuccessResponse{
+  export interface ISuccess{
     [key: string]:any,
     status: true
   }
-  export type SuccessResponseDto = object | object[] | string | string[] | number | number[] | boolean | ISuccessResponse ;
+  export type SuccessResponseDto = object | object[] | string | string[] | number | number[] | boolean | ISuccess ;
 
-  export type FailureResponseDto = {
+  export type IFailure = {
     status: false
     message: TMessage
   };

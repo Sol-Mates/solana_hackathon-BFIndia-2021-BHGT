@@ -26,36 +26,32 @@ exports.up = function (knex) {
    .createTable(tableNames.UNIQUE_CODE, (table) => {
       table.increments('id');
       table.string('uniqueCode', UNIQUE_CODE_LENGTH).unique().notNullable();
+      table.boolean('isActive').notNullable();
       table.timestamps(true, true)
    })
 
-   //certificateType
+   //coupleInfo
    .createTable(tableNames.COUPLE_INFO, (table) => {
       table.increments('id');
       table.integer('first_partner').unsigned().references("id").inTable(tableNames.USER).index().notNullable();
-      table.integer('second_partner').unsigned().references("id").inTable(tableNames.USER).index().notNullable();
+      table.integer('second_partner').unsigned().references("id").inTable(tableNames.USER).index();
       table.string('coupleId', UNIQUE_CODE_LENGTH).references("uniqueCode").inTable(tableNames.UNIQUE_CODE).index().notNullable();
+      table.integer('stakeCurrencyCount');
+      table.string('stakeCurrencyName',100);
+      table.string('stakeCurrencyWalletAddress',100);
+      table.boolean('isActive');
       table.timestamps(true, true)
    })
 
-   //certificateType
+   //coupleCurrencyInfo
    .createTable(tableNames.COUPLE_CURRENCY_INFO, (table) => {
       table.increments('id');
       table.string('coupleId', UNIQUE_CODE_LENGTH).references("coupleId").inTable(tableNames.COUPLE_INFO).index().notNullable();
-      
-      table.integer('first_partner_stake');
-      table.integer('first_partner_percentage');
-      table.string('first_partner_wallet',100);
-      
-      table.integer('second_partner_stake');
-      table.integer('second_partner_percentage');
-      table.string('second_partner_wallet',100);
-   
-      table.integer('stakeCurrencyCount');
-      table.string('stakeCurrencyName',100);
-      table.string('stakeCurrencyAddress',100);
-      table.string('stakeCurrencyPercentage',500);
-
+      table.integer('userId').unsigned().references("id").inTable(tableNames.USER).index().notNullable();
+      table.integer('currency_stake_count');
+      table.integer('currency_share_percentage');
+      table.string('currency_wallet_address',100);
+      table.boolean('isLatest');
       table.timestamps(true, true)
    })
    
@@ -78,7 +74,7 @@ exports.up = function (knex) {
       table.string('valuesOnCertificate',500); //array of strings which can be referred sequentially in the chosen template's placeholders
       
       table.integer('certificateType').unsigned().references("id").inTable(tableNames.CERTIFICATE_TYPE).index().notNullable();
-      table.integer('certificateNumber').unsigned();
+      table.string('certificateNumber',200);
       table.string('certificateTemplate',5000); //can be Id from IPFS or template htmlcoded string
       
       table.boolean('isActive').notNullable();
