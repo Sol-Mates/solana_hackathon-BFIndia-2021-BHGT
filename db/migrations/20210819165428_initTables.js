@@ -75,8 +75,11 @@ exports.up = function (knex) {
       
       table.integer('certificateType').unsigned().references("id").inTable(tableNames.CERTIFICATE_TYPE).index().notNullable();
       table.string('certificateNumber',200);
-      table.string('certificateTemplate',5000); //can be Id from IPFS or template htmlcoded string
-      
+      table.string('certificateDoc',100); //uploaded file from the FE of the certificate
+      table.string('certificateDocQRCode',5000) //storing qrcode of the uploaded document from the IPFS blockchain
+      table.string('certificateTemplate',5000); //template htmlcoded string
+      table.string('certificateTemplateIPFS',500);//Id from IPFS of the uploaded template 
+      table.string('certificateTemplateQRCode',200);//storing qrcode of the uploaded template from the IPFS blockchain
       table.boolean('isActive').notNullable();
       table.timestamps(true, true)
    })

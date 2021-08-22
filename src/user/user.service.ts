@@ -10,6 +10,9 @@ import { UniqueCodeService } from 'src/dbservices/tables/uniqueCode/uniqueCode.s
 import { CoupleService } from 'src/dbservices/tables/couple/couple.services';
 import { CurrencyStakeInfoDto, CoupleInfoDto } from 'src/dbservices/entities/couple.entity';
 import { UniqueCodeDto } from 'src/dbservices/entities/uniqueCode.entity';
+import { IPFSService } from 'src/features/ipfs/ipfs.service';
+import { QRCodeService } from 'src/features/qrcode/qrcode.service';
+
 const saltOrRounds = 10;
 @Injectable()
 export class UserService {
@@ -24,6 +27,12 @@ export class UserService {
 
   @Inject()
   private coupleDBService: CoupleService
+
+  @Inject()
+  private ipfsService: IPFSService
+
+  @Inject()
+  private qrCodeService: QRCodeService
 
   async findOne(params: {userId?: number, username?: string}): Promise<User[] | undefined> {
     return this.userQueries.getUser({ ...params })
@@ -176,18 +185,36 @@ export class UserService {
       certificateNumber,
       certificateType,
       valuesOnCertificate,
-      certificateTemplate
+      certificateTemplate,
+      certificateDoc
     } = info as ICertificateInfoDto
 
+    let qrCodeCertificateDoc;
+    let certificateTemplateQRCode;
+    let certificateTemplateIPFS;
+    const ipfsUrl = `https://ipfs.io/ipfs/`
+    if(certificateDoc){
+      const {cid}= await this.ipfsService.saveDataToIPFS(certificateDoc)
+      qrCodeCertificateDoc = await this.qrCodeService.generateQRCode(`${ipfsUrl}${cid.toString()}`)
+    }
+
+    if(certificateTemplate){
+      const {cid}= await this.ipfsService.saveDataToIPFS(certificateTemplate)
+      certificateTemplateIPFS = cid.toString()
+      certificateTemplateQRCode = await this.qrCodeService.generateQRCode(`${ipfsUrl}${certificateTemplateIPFS}`)
+    }
     const certificateInfoObj = {
       certificateNumber,
       certificateType,
       coupleId,
       isActive: true,
+      valuesOnCertificate: JSON.stringify(valuesOnCertificate),
+      certificateDoc,
+      certificateDocQRCode: qrCodeCertificateDoc, //storing qrcode of the uploaded document from the IPFS blockchain
       certificateTemplate,
-      valuesOnCertificate: JSON.stringify(valuesOnCertificate)
+      certificateTemplateIPFS, //cid of the uploaded template
+      certificateTemplateQRCode,
     } as ICertificateInfoDto
-
     await this.coupleDBService.addCertificateInfo(certificateInfoObj)
   }
 

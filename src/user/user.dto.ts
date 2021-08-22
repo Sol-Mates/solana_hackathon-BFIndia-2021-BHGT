@@ -51,13 +51,16 @@ export interface IInfoData{
     stakeInfo: CurrencyStakeInfoDto
 }
 export interface ICertificateInfoDto{
+    certificateType: ICertificateType;
+    
     certificateNumber: string;
 
-    certificateType: ICertificateType;
+    certificateDoc: string; //uploaded file from the FE of the certificate
 
-    certificateTemplate: string;
-
+    certificateDocQRCode: string; //storing qrcode of the uploaded document from the IPFS blockchain
+    certificateTemplate: string; //template htmlcoded string
+    certificateTemplateIPFS: string; //Id from IPFS of the uploaded template 
+    certificateTemplateQRCode: string; //storing qrcode of the uploaded template from the IPFS blockchain
     valuesOnCertificate: string; //JSON.stringify data of array of values
-
     isActive: boolean;
 }

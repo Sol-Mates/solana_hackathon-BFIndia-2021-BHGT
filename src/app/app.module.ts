@@ -21,6 +21,7 @@ import { LocationController } from 'src/features/location/location.controller';
 import { LocationService } from 'src/features/location/location.service';
 import { ResponseInterceptor } from 'src/interceptors/response.interceptor';
 import { UniqueCodeService } from 'src/dbservices/tables/uniqueCode/uniqueCode.services';
+import { IpfsModule } from '@mfsoftworks/nestjs-ipfs';
 @Module({
   imports: [
     KnexModule.registerAsync({
@@ -31,7 +32,8 @@ import { UniqueCodeService } from 'src/dbservices/tables/uniqueCode/uniqueCode.s
     ConfigModule.forRoot({
     isGlobal: true,
     load: [dbconfig,appConfig]
-  })],
+  }),
+  IpfsModule.register()],
   controllers: [AppController, ContentController, LocationController],
   providers: [AppService, ContentService, LocationService,UniqueCodeService, {
     provide: APP_FILTER,
