@@ -20,7 +20,7 @@ export class CoupleQueries {
         if(couple.second_partner){
             query.where(`second_partner`,couple.second_partner)
         }else{
-            query.whereNull('second_partner')
+                query.whereNull('second_partner')
         }
 
         return query   
@@ -80,6 +80,23 @@ export class CoupleQueries {
         
         query.where(`coupleId`,coupleId)
         query.update('isLatest', false)
+        return query   
+    }
+
+    async fetchUsersFromCoupleInfo(couple: CoupleInfoDto): Promise<CoupleInfoDto[]>{
+        const query = this.knex(tableNames.COUPLE_INFO)
+        if(couple.first_partner){
+            query.where(`first_partner`,couple.first_partner)
+        }
+
+        if(couple.coupleId){
+            query.where(`coupleId`,couple.coupleId)
+        }
+
+        if(couple.second_partner){
+            query.where(`second_partner`,couple.second_partner)
+        }
+        query.select("*")
         return query   
     }
 

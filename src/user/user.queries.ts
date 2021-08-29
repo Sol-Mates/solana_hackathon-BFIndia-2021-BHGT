@@ -22,7 +22,7 @@ export class UserQueries {
         }
 
         if(userId){
-            query.where('userId',userId)
+            query.where('id',userId)
         }
         
 
@@ -37,7 +37,6 @@ export class UserQueries {
         // query.leftJoin(`${tableNames.COUPLE_INFO} as coupleInfo2`, function () {
         //     this.on('coupleInfo2.second_partner', '=', `${tableNames.USER}.id`)
         // })
-
         return query
     }
 

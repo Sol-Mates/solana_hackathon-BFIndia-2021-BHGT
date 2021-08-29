@@ -7,13 +7,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from './contstants/jwt.constant';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { GoogleStrategy } from './google/google.strategy';
+import { ApplicationLoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports:[UserModule, PassportModule, JwtModule.register({
     secret: JwtConstants.secret,
     signOptions: { expiresIn: JwtConstants.expiresIn },
   }),],
-  providers: [AuthService, GoogleStrategy, JwtStrategy],
+  providers: [AuthService, GoogleStrategy, JwtStrategy, ApplicationLoggerService],
   controllers: [AuthController]
 })
 export class AuthModule {}

@@ -28,11 +28,13 @@ export class LoggerInterceptor implements NestInterceptor {
         let body = req.body;
         body = JSON.stringify(body)
         const url = req.url;
-
+        
         return call$.handle().pipe(
             tap(() => {
+                let tempBody = JSON.parse(body)
+                delete tempBody.password
                 this.applicationLogger.log(
-                    `Request : ${req.requestId} ${method} ${url} ${body}, took ${Date.now() - now}ms`,
+                    `Request : ${req.requestId} ${method} ${url} ${JSON.stringify(tempBody)}, took ${Date.now() - now}ms`,
                     context.getClass().name,
                 )
             },

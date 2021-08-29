@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt'
+import { ApplicationLoggerService } from 'src/logger/logger.service';
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService, private jwtService: JwtService) {}
+  constructor(private userService: UserService, private jwtService: JwtService, private applicationLoggerService: ApplicationLoggerService) {
+    this.applicationLoggerService.setContext("Auth Service")
+  }
 
   async validateUser(params:{username: string, pass: string}): Promise<any> {
     const user = await this.userService.findOne({...params});
@@ -26,7 +29,8 @@ export class AuthService {
       payload = { username: payload.username, id: payload.id };
       return {
         access_token: this.jwtService.sign(payload),
-        userId: payload.id
+        userId: payload.id,
+        username: payload.username
       };
     }else{
       throw Error("Please enter valid username or password")

@@ -17,7 +17,7 @@ export class UserController {
 
     @Get('fetchUserInfo/:userId')
     async fetchUserInfo(@Param() param){
-        await this.userService.findOne({userId: param.userId})
+        await this.userService.findOne({userId: param.userId, withoutPassword:true})
     }
 
     @Post('dummy')
@@ -52,5 +52,11 @@ export class UserController {
     @Post('saveProfile')
     async saveProfile(@Request() req, @Body() body){
         return this.userService.saveProfile(req.user, body)
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('fetchCoupleInfo')
+    async fetchCoupleInfo(@Request() req){
+        return this.userService.coupleInfo(req.user)
     }
 }

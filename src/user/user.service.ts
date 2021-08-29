@@ -34,8 +34,16 @@ export class UserService {
   @Inject()
   private qrCodeService: QRCodeService
 
-  async findOne(params: {userId?: number, username?: string}): Promise<User[] | undefined> {
-    return this.userQueries.getUser({ ...params })
+  async findOne(params: {userId?: number, username?: string, withoutPassword?: boolean}): Promise<User[] | undefined> {
+    const userData = await this.userQueries.getUser({ ...params })
+    if(params.withoutPassword && !userData || !userData.length){
+      throw Error("User does not exist in the system")
+    }
+
+    if(params.withoutPassword){
+      delete userData[0].password
+    }
+    return userData
   }
 
   async findIfUserActiveCouple(params: {userId?: number, username?: string}): Promise<User[] | undefined> {
@@ -235,5 +243,46 @@ export class UserService {
   }
 
 
+  async coupleInfo(user: UserDto): Promise<any>{
+    let coupleIdGenerated = await this.coupleDBService.fetchUsersFromCoupleInfo({ first_partner: user.id} as CoupleInfoDto)
+    let coupleId = ""
+    if (coupleIdGenerated && coupleIdGenerated.length) {
+      coupleId = coupleIdGenerated[0].coupleId
+    }
+    if(!coupleId){
+      coupleIdGenerated = await this.coupleDBService.fetchUsersFromCoupleInfo({ second_partner: user.id } as CoupleInfoDto)
+      if (coupleIdGenerated && coupleIdGenerated.length) {
+        coupleId = coupleIdGenerated[0].coupleId
+      }
+    }
+    
+    if(coupleId){
+      const coupleUserIds = await this.coupleDBService.fetchUsersFromCoupleInfo({coupleId} as CoupleInfoDto);
+      if(!coupleUserIds || !coupleUserIds.length){
+        throw "Couple does not exist in the system"
+      }
+
+      const firstPartnerId = coupleUserIds[0].first_partner
+      const secondPartnerId = coupleUserIds[0].second_partner
+      const firstPartnerData = await this.findOne({userId: firstPartnerId, withoutPassword: true})
+      const secondPartnerData = await this.findOne({userId: secondPartnerId, withoutPassword: true})
+      return {
+        firstPartnerInfo:{
+          ...firstPartnerData[0],
+        },
+        secondPartnerInfo:{
+          ...secondPartnerData[0]
+        },
+        coupleId
+      }
+    }else{
+      const userData = await this.findOne({userId: user.id, withoutPassword: true})
+      return {
+        firstPartnerInfo:{
+          ...userData[0]
+        }
+      }
+    }
+  }
 
 }

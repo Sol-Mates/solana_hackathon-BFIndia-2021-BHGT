@@ -37,4 +37,8 @@ export class CoupleService {
     async disableCoupleCurrencyInfo(coupleId: string):Promise<any>{
         return this.coupleQueries.disableCoupleCurrencyInfo(coupleId)
     }
+
+    async fetchUsersFromCoupleInfo(params: CoupleInfoDto): Promise<CoupleInfoDto[]>{
+        return this.coupleQueries.fetchUsersFromCoupleInfo(params)
+    }
 }

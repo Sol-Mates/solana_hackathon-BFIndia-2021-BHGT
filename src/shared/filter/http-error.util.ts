@@ -12,7 +12,7 @@ export class HttpErrorFilter implements ExceptionFilter{
         const ctx = host.switchToHttp()
         const request = ctx.getRequest()
         const response = ctx.getResponse()
-        const status = exception.getStatus ? exception.getStatus() : '5005'
+        const status = exception.getStatus ? exception.getStatus() : 500
         const exceptionResponse : any = exception.getResponse ? exception.getResponse() : {error: 'Internal Server Error'}
         /**
          * prepare the custom error message
@@ -35,7 +35,7 @@ export class HttpErrorFilter implements ExceptionFilter{
             this.applicationLogger.error(
                 'ExceptionFilter',
               `${request.method} ${request.url}`,
-              exception.stack,
+              `${JSON.stringify(errorResponseObject)} at ${exception.stack}`,
             );
           } else {
             this.applicationLogger.error(
