@@ -36,10 +36,6 @@ export class UserService {
 
   async findOne(params: {userId?: number, username?: string, withoutPassword?: boolean}): Promise<User[] | undefined> {
     const userData = await this.userQueries.getUser({ ...params })
-    if(params.withoutPassword && !userData || !userData.length){
-      throw Error("User does not exist in the system")
-    }
-
     if(params.withoutPassword){
       delete userData[0].password
     }
