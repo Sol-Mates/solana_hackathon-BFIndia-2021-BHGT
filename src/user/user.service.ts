@@ -48,6 +48,16 @@ export class UserService {
 
   async saveUser(user: UserDto): Promise<SuccessResponseDto> {
     try {
+
+      if(user && user.noErrorOnExisting){
+        const userExist = await this.findOne({username:user.username})
+        if(userExist && userExist[0]){
+          return {
+            message: "User already exists"
+          }
+        }
+      }
+      delete user.noErrorOnExisting
       const userObj = {
         ...user,
         password: await bcrypt.hash(user.password, saltOrRounds)
@@ -130,7 +140,7 @@ export class UserService {
       return "Congratulations and Wish you good luck for your new journey! You have joined your partner."
     } catch (err) {
       this.applicationLogger.error(err)
-      throw new HttpException(`${err.message || 'Exception occured while joining the invite code'}`, HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException(`${err.message || 'Exception occured while joining the invite code'}`, HttpStatus.BAD_REQUEST)
     }
   }
 
@@ -261,6 +271,7 @@ export class UserService {
       const firstPartnerId = coupleUserIds[0].first_partner
       const secondPartnerId = coupleUserIds[0].second_partner
       const firstPartnerData = await this.findOne({userId: firstPartnerId, withoutPassword: true})
+      if(secondPartnerId){
       const secondPartnerData = await this.findOne({userId: secondPartnerId, withoutPassword: true})
       return {
         firstPartnerInfo:{
@@ -271,6 +282,14 @@ export class UserService {
         },
         coupleId
       }
+    }else{
+      return {
+        firstPartnerInfo:{
+          ...firstPartnerData[0],
+        },
+        coupleId
+      }
+    }
     }else{
       const userData = await this.findOne({userId: user.id, withoutPassword: true})
       return {

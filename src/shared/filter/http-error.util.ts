@@ -44,7 +44,7 @@ export class HttpErrorFilter implements ExceptionFilter{
               JSON.stringify(errorResponseObject),
             );
           }
-        response.status(404).json(errorResponseObject)
+        response.status(status).json(errorResponseObject)
         
     }
 

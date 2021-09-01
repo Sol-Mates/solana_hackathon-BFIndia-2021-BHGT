@@ -7,6 +7,8 @@ export class UserDto {
 
     name: string;
 
+    username: string;
+
     @IsEmail()
     email: string;
 
@@ -14,6 +16,8 @@ export class UserDto {
     password: string;
 
     isActive?: boolean;
+
+    noErrorOnExisting?: boolean
 
 }
 
